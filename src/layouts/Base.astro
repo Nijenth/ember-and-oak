@@ -1,0 +1,108 @@
+---
+import '../styles/global.css';
+import { THEMES, themeCss, fontsUrl, type ThemeKey } from '../data/themes';
+import type { Site } from '../lib/content';
+
+interface Props {
+  site: Site;
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const { site, title, description, noindex = false } = Astro.props;
+const { settings: s, themeKey, hours } = site;
+const theme = THEMES[themeKey as ThemeKey];
+
+const pageTitle = title ?? (s.tagline ? `${s.name} · ${s.tagline}` : s.name);
+const pageDescription = description ?? s.description;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og.png', Astro.site).href;
+
+// Font stylesheet for each theme, so a visitor's saved theme can load its fonts before first paint.
+const themeFonts = Object.fromEntries(Object.entries(THEMES).map(([k, t]) => [k, fontsUrl(t)]));
+const allowSwitch = s.showThemeSwitcher;
+
+// Structured data so Google can show the café's address, hours and phone.
+const a = s.address;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CafeOrCoffeeShop',
+  name: s.name,
+  description: s.description,
+  url: new URL('/', Astro.site).href,
+  image: ogImage,
+  telephone: s.phone || undefined,
+  email: s.email || undefined,
+  servesCuisine: 'Coffee',
+  priceRange: '$',
+  hasMenu: new URL('/#menu', Astro.site).href,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: a.street,
+    addressLocality: a.city,
+    addressRegion: a.region || undefined,
+    postalCode: a.postalCode || undefined,
+    addressCountry: a.country || undefined,
+  },
+  openingHoursSpecification: hours
+    .filter((h) => !h.closed)
+    .map((h) => ({ '@type': 'OpeningHoursSpecification', dayOfWeek: `https://schema.org/${h.day}`, opens: h.open, closes: h.close })),
+  sameAs: [s.instagram].filter(Boolean),
+};
+---
+
+<!doctype html>
+<html lang="en" data-skin={themeKey}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="theme-color" content={theme.c.paper} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={s.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={fontsUrl(theme)} id="theme-fonts" />
+
+    <style is:global set:html={themeCss()}></style>
+
+    <script is:inline define:vars={{ themeFonts, allowSwitch, fallback: themeKey }}>
+      // Apply a visitor's saved theme before the page paints, to avoid a flash of the default.
+      try {
+        var saved = allowSwitch ? localStorage.getItem('cafe-theme') : null;
+        if (saved && saved !== fallback && themeFonts[saved]) {
+          document.documentElement.dataset.skin = saved;
+          var l = document.createElement('link');
+          l.rel = 'stylesheet';
+          l.href = themeFonts[saved];
+          l.dataset.theme = saved;
+          document.head.appendChild(l);
+        }
+      } catch (e) {}
+    </script>
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

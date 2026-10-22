@@ -1,0 +1,16 @@
+{
+  "name": "Matcha Latte",
+  "category": "Slow bar",
+  "price": 5,
+  "description": "Ceremonial-grade matcha whisked with oat milk.",
+  "recipe": "3 g matcha · 200 ml oat",
+  "available": true,
+  "order": 70,
+  "featured": false,
+  "look": {
+    "cup": "mug",
+    "liquid": "#8DB35A",
+    "art": "matcha",
+    "fill": 0.86
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Espresso",
+  "category": "Espresso bar",
+  "price": 3.5,
+  "description": "Our house blend, pulled short and syrupy.",
+  "recipe": "18 g in · 36 g out · 28 s",
+  "available": true,
+  "order": 10,
+  "featured": false,
+  "look": {
+    "cup": "demi",
+    "liquid": "#3B1F10",
+    "art": "crema",
+    "fill": 0.62
+  }
+}

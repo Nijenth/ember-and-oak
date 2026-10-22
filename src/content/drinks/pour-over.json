@@ -1,0 +1,16 @@
+{
+  "name": "Pour Over",
+  "category": "Slow bar",
+  "price": 5.5,
+  "description": "Today's single origin, brewed by hand to order.",
+  "recipe": "1 : 16 · 15 g to 250 ml · 3 min",
+  "available": true,
+  "order": 60,
+  "featured": false,
+  "look": {
+    "cup": "mug",
+    "liquid": "#5A2E14",
+    "art": "plain",
+    "fill": 0.8
+  }
+}

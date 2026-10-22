@@ -1,0 +1,16 @@
+{
+  "name": "Mocha",
+  "category": "Espresso bar",
+  "price": 5,
+  "description": "70% dark chocolate melted into espresso and milk.",
+  "recipe": "Double shot · 25 g chocolate",
+  "available": true,
+  "order": 50,
+  "featured": false,
+  "look": {
+    "cup": "mug",
+    "liquid": "#6B3A22",
+    "art": "drizzle",
+    "fill": 0.88
+  }
+}

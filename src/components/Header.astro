@@ -1,0 +1,34 @@
+---
+import Logo from './Logo.astro';
+import { THEMES, type ThemeKey } from '../data/themes';
+
+interface Props { name: string; themeKey: ThemeKey; showSwitcher: boolean; links?: { href: string; label: string }[] }
+const { name, themeKey, showSwitcher, links = [{ href: '/#beans', label: 'Beans' }, { href: '/#menu', label: 'Menu' }, { href: '/#visit', label: 'Visit' }] } = Astro.props;
+const themes = Object.entries(THEMES) as [ThemeKey, (typeof THEMES)[ThemeKey]][];
+---
+<header class="head">
+  <div class="wrap head-in">
+    <a class="logo" href="/" aria-label={`${name}, home`}>
+      <Logo />
+      <span class="logo-text">{name}</span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      {links.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    {showSwitcher && (
+      <>
+        <span class="theme-name" id="themeName" aria-live="polite">{THEMES[themeKey].label}</span>
+        <fieldset class="swatches" id="swatches">
+          <legend class="sr-only">Colour theme</legend>
+          {themes.map(([k, t]) => (
+            <label class="sw" title={t.label}>
+              <input type="radio" name="theme" value={k} checked={k === themeKey} data-label={t.label} />
+              <span style={`--a:${t.c.paper};--b:${t.d3.cup}`} aria-hidden="true"></span>
+              <span class="sr-only">{t.label}</span>
+            </label>
+          ))}
+        </fieldset>
+      </>
+    )}
+  </div>
+</header>

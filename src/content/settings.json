@@ -1,0 +1,23 @@
+{
+  "name": "Ember & Oak",
+  "tagline": "Roastery & coffee bar",
+  "description": "A small roastery and coffee bar. Roasted every Tuesday, poured slowly. Twelve seats, three coffees on bar.",
+  "phone": "+1 555 0142",
+  "email": "",
+  "address": {
+    "street": "14 Foundry Lane",
+    "area": "Old Mill District",
+    "city": "Springfield",
+    "region": "",
+    "postalCode": "",
+    "country": "US"
+  },
+  "mapsUrl": null,
+  "orderUrl": null,
+  "instagram": null,
+  "currency": "USD",
+  "locale": "en-US",
+  "timeZone": "America/New_York",
+  "theme": "espresso",
+  "showThemeSwitcher": true
+}

@@ -1,0 +1,52 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Ticker from '../components/Ticker.astro';
+import Beans from '../components/Beans.astro';
+import Menu from '../components/Menu.astro';
+import Visit from '../components/Visit.astro';
+import Footer from '../components/Footer.astro';
+import { loadSite } from '../lib/content';
+
+const site = await loadSite();
+const { settings: s, page } = site;
+---
+
+<Base site={site}>
+  <Header name={s.name} themeKey={site.themeKey} showSwitcher={s.showThemeSwitcher} links={[{ href: '#beans', label: 'Beans' }, { href: '#menu', label: 'Menu' }, { href: '#visit', label: 'Visit' }]} />
+
+  <canvas id="stage" aria-hidden="true"></canvas>
+
+  <main id="main">
+    <Hero eyebrow={page.hero.eyebrow} title={page.hero.title} text={page.hero.text} stats={[...page.stats]} />
+    <Ticker items={[...page.ticker]} />
+    <Beans eyebrow={page.beans.eyebrow} title={page.beans.title} text={page.beans.text} origins={site.origins} steps={[...page.steps]} />
+    <Menu
+      eyebrow={page.menu.eyebrow}
+      title={page.menu.title}
+      note={page.menu.note}
+      drinks={site.drinks}
+      categories={site.categories}
+      startDrink={site.startDrink}
+      orderUrl={s.orderUrl}
+      formatPrice={site.formatPrice}
+    />
+    <Visit
+      eyebrow={page.visit.eyebrow}
+      title={page.visit.title}
+      addressLines={site.addressLines}
+      mapsUrl={site.mapsUrl}
+      phone={s.phone}
+      hours={site.hours}
+      note={site.hoursNote}
+      timeZone={s.timeZone}
+    />
+  </main>
+
+  <Footer name={s.name} instagram={s.instagram} email={s.email} />
+
+  <script>
+    import '../scripts/site';
+  </script>
+</Base>

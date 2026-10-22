@@ -1,0 +1,16 @@
+{
+  "name": "Cold Brew",
+  "category": "Cold",
+  "price": 5,
+  "description": "Steeped 18 hours, poured over a single big cube.",
+  "recipe": "1 : 8 concentrate · 18 h steep",
+  "available": true,
+  "order": 80,
+  "featured": false,
+  "look": {
+    "cup": "glass",
+    "liquid": "#2E170B",
+    "art": "plain",
+    "fill": 0.72
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Cappuccino",
+  "category": "Espresso bar",
+  "price": 4.5,
+  "description": "Deep, airy foam with a dusting of cocoa.",
+  "recipe": "Double shot · 150 ml milk",
+  "available": true,
+  "order": 40,
+  "featured": false,
+  "look": {
+    "cup": "mug",
+    "liquid": "#B9895E",
+    "art": "foam",
+    "fill": 0.9
+  }
+}

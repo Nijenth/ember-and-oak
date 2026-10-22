@@ -1,0 +1,12 @@
+---
+interface Props { items: string[] }
+const { items } = Astro.props;
+---
+{items.length > 0 && (
+  <div class="ticker">
+    <p class="sr-only">{items.join('. ')}</p>
+    <div class="ticker-track" aria-hidden="true">
+      {[...items, ...items].map((t) => <span>{t}</span>)}
+    </div>
+  </div>
+)}

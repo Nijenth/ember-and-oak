@@ -1,0 +1,60 @@
+{
+  "hero": {
+    "eyebrow": "Roastery & coffee bar",
+    "title": "Coffee worth slowing down for.",
+    "text": "We roast small batches every Tuesday and pour them a few metres from the roaster. Twelve seats, three coffees on bar, no rush."
+  },
+  "stats": [
+    {
+      "value": "Tue",
+      "label": "Roast day, every week"
+    },
+    {
+      "value": "12",
+      "label": "Seats by the window"
+    },
+    {
+      "value": "3",
+      "label": "Origins on bar"
+    }
+  ],
+  "ticker": [
+    "Roasted every Tuesday",
+    "Oat milk at no extra cost",
+    "Beans to take home",
+    "Decaf done properly",
+    "Pastries from the bakery next door"
+  ],
+  "beans": {
+    "eyebrow": "On bar this season",
+    "title": "Three coffees, roasted a few metres away",
+    "text": "We keep the list short so every coffee gets dialled in properly. Each one is roasted for how we brew it, not the other way round."
+  },
+  "steps": [
+    {
+      "title": "Source",
+      "text": "Green coffee from three regions, bought by the harvest season."
+    },
+    {
+      "title": "Roast",
+      "text": "Every Tuesday morning on a 5 kg drum roaster, in batches of twelve."
+    },
+    {
+      "title": "Rest",
+      "text": "Seven to ten days of degassing before a bean reaches the grinder."
+    },
+    {
+      "title": "Brew",
+      "text": "Dialled in each morning: dose, yield and time, tasted before we open."
+    }
+  ],
+  "menu": {
+    "eyebrow": "The menu",
+    "title": "Pick a drink and watch it pour",
+    "note": "Oat, almond and whole milk at no extra cost. Decaf on request."
+  },
+  "visit": {
+    "eyebrow": "Visit",
+    "title": "Pull up a stool"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Flat White",
+  "category": "Espresso bar",
+  "price": 4.5,
+  "description": "Double ristretto under silky microfoam.",
+  "recipe": "Double ristretto · 120 ml milk",
+  "available": true,
+  "order": 30,
+  "featured": true,
+  "look": {
+    "cup": "mug",
+    "liquid": "#A87148",
+    "art": "rosetta",
+    "fill": 0.86
+  }
+}

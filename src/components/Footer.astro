@@ -1,0 +1,15 @@
+---
+interface Props { name: string; instagram?: string | null; email?: string; showBigName?: boolean }
+const { name, instagram, email, showBigName = true } = Astro.props;
+const year = new Date().getFullYear();
+---
+<footer class="wrap">
+  {showBigName && <div class="foot-big" aria-hidden="true">{name}</div>}
+  <div class="foot">
+    <span>© {year} {name}. All rights reserved.</span>
+    <span class="foot-links">
+      {instagram && <a href={instagram} target="_blank" rel="noopener">Instagram</a>}
+      {email && <a href={`mailto:${email}`}>{email}</a>}
+    </span>
+  </div>
+</footer>

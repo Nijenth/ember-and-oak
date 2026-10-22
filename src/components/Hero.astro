@@ -1,0 +1,40 @@
+---
+import CupFallback from './CupFallback.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  text: string;
+  stats: { value: string; label: string }[];
+}
+const { eyebrow, title, text, stats } = Astro.props;
+const words = title.trim().split(/\s+/);
+---
+<section class="wrap hero" aria-labelledby="hero-title">
+  <div>
+    {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+    <h1 id="hero-title">
+      {words.map((w, i) => (
+        <>
+          <span class="w" style={`animation-delay:${i * 0.07}s`}>{i === words.length - 1 ? <em>{w}</em> : w}</span>{i < words.length - 1 ? ' ' : ''}
+        </>
+      ))}
+    </h1>
+    <p class="hero-text">{text}</p>
+    <div class="hero-cta">
+      <a class="btn" href="#menu">See the menu</a>
+      <a class="btn btn-ghost" href="#visit">Find us</a>
+    </div>
+    {stats.length > 0 && (
+      <dl class="stats">
+        {stats.map((s) => (
+          <div>
+            <dt>{s.value}</dt>
+            <dd>{s.label}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+  </div>
+  <div class="spot" id="spotHero"><CupFallback /></div>
+</section>

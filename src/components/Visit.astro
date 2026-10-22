@@ -1,0 +1,38 @@
+---
+import CupFallback from './CupFallback.astro';
+import type { DayHours } from '../lib/content';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  addressLines: string[];
+  mapsUrl: string;
+  phone?: string;
+  hours: DayHours[];
+  note?: string;
+  timeZone?: string;
+}
+const { eyebrow, title, addressLines, mapsUrl, phone, hours, note, timeZone } = Astro.props;
+const tel = phone ? 'tel:' + phone.replace(/[^\d+]/g, '') : '';
+---
+<section class="wrap section flush-top" id="visit" aria-labelledby="visit-title">
+  <div class="visit">
+    <div>
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h2 class="sec-title" id="visit-title">{title}</h2>
+      <address class="addr">{addressLines.map((l, i) => <>{l}{i < addressLines.length - 1 && <br />}</>)}</address>
+      <span class="open-pill" id="openPill" data-tz={timeZone} data-hours={JSON.stringify(hours)}><i></i><span></span></span>
+      <dl class="hours" id="hours">
+        {hours.map((h) => (
+          <div><dt>{h.day}</dt><dd>{h.closed ? 'Closed' : `${h.open} – ${h.close}`}</dd></div>
+        ))}
+      </dl>
+      {note && <p class="hours-note">{note}</p>}
+      <div class="hero-cta">
+        <a class="btn" href={mapsUrl} target="_blank" rel="noopener">Get directions</a>
+        {phone && <a class="btn btn-ghost" href={tel}>{phone}</a>}
+      </div>
+    </div>
+    <div class="spot" id="spotVisit"><CupFallback /></div>
+  </div>
+</section>

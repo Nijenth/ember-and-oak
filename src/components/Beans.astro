@@ -1,0 +1,51 @@
+---
+import CupFallback from './CupFallback.astro';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  text: string;
+  origins: { id: string; name: string; process: string; altitude: string; notes: readonly string[]; roast: number; use: string }[];
+  steps: { title: string; text: string }[];
+}
+const { eyebrow, title, text, origins, steps } = Astro.props;
+---
+<section class="wrap section" id="beans" aria-labelledby="beans-title">
+  <div class="split">
+    <div class="spot" id="spotStory"><CupFallback /></div>
+    <div>
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h2 class="sec-title" id="beans-title">{title}</h2>
+      {text && <p class="lede">{text}</p>}
+      <ul class="origins">
+        {origins.map((o) => (
+          <li class="origin">
+            <h3>{o.name}</h3>
+            <div class="meta">{o.process}<br />{o.altitude}</div>
+            {o.notes.length > 0 && (
+              <ul class="notes" aria-label="Tasting notes">
+                {o.notes.map((n) => <li>{n}</li>)}
+              </ul>
+            )}
+            <div class="roast">
+              <span>Roast</span>
+              <span class="sr-only">{o.roast} of 5</span>
+              {[1, 2, 3, 4, 5].map((i) => <i class={i <= o.roast ? 'on' : ''} aria-hidden="true"></i>)}
+              {o.use && <span class="use">{o.use}</span>}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  {steps.length > 0 && (
+    <ol class="steps">
+      {steps.map((s) => (
+        <li class="step">
+          <h3>{s.title}</h3>
+          <p>{s.text}</p>
+        </li>
+      ))}
+    </ol>
+  )}
+</section>

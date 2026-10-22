@@ -1,0 +1,54 @@
+---
+import CupFallback from './CupFallback.astro';
+import type { Drink } from '../lib/content';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  note: string;
+  drinks: Drink[];
+  categories: string[];
+  startDrink?: Drink;
+  orderUrl?: string | null;
+  formatPrice: (n: number) => string;
+}
+const { eyebrow, title, note, drinks, categories, startDrink, orderUrl, formatPrice } = Astro.props;
+const startCat = startDrink?.category ?? categories[0];
+const tabId = (i: number) => `tab-${i}`;
+// What the 3D cup needs to know about each drink.
+const looks = Object.fromEntries(drinks.map((d) => [d.id, { ...d.look, name: d.name, recipe: d.recipe, category: d.category, price: formatPrice(d.price) }]));
+---
+<section class="wrap section flush-top" id="menu" aria-labelledby="menu-title">
+  {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+  <h2 class="sec-title" id="menu-title">{title}</h2>
+  <div class="menu-grid">
+    <div>
+      {categories.length > 1 && (
+        <div class="tabs" role="tablist" aria-label="Menu sections">
+          {categories.map((c, i) => (
+            <button class="tab" type="button" role="tab" id={tabId(i)} aria-controls="drink-list" aria-selected={c === startCat ? 'true' : 'false'} tabindex={c === startCat ? 0 : -1} data-cat={c}>{c}</button>
+          ))}
+        </div>
+      )}
+      <div class="drinks" id="drink-list" role={categories.length > 1 ? 'tabpanel' : undefined} aria-labelledby={categories.length > 1 ? tabId(categories.indexOf(startCat)) : undefined}>
+        {drinks.map((d) => (
+          <button class="drink" type="button" data-drink={d.id} data-cat={d.category} aria-pressed={d.id === startDrink?.id ? 'true' : 'false'} hidden={d.category !== startCat}>
+            <span class="dname">{d.name}</span>
+            <span class="price">{formatPrice(d.price)}</span>
+            {d.description && <span class="ddesc">{d.description}</span>}
+          </button>
+        ))}
+      </div>
+      {note && <p class="lede menu-note">{note}</p>}
+    </div>
+    <div class="window" id="cupWindow" aria-live="polite">
+      <CupFallback />
+      <div class="window-top"><span class="eyebrow" id="winBar">{startDrink?.category}</span><span class="eyebrow" id="winPrice">{startDrink && formatPrice(startDrink.price)}</span></div>
+      <div class="window-cap">
+        <div><h3 id="winName">{startDrink?.name}</h3><p class="ratio" id="winRatio">{startDrink?.recipe}</p></div>
+        {orderUrl && <a class="btn" href={orderUrl} target="_blank" rel="noopener" id="orderBtn">Order ahead</a>}
+      </div>
+    </div>
+  </div>
+  <script type="application/json" id="drink-looks" set:html={JSON.stringify({ start: startDrink?.id ?? null, drinks: looks })}></script>
+</section>

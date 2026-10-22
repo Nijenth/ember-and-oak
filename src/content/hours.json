@@ -1,0 +1,38 @@
+{
+  "monday": {
+    "closed": false,
+    "open": "07:00",
+    "close": "18:00"
+  },
+  "tuesday": {
+    "closed": false,
+    "open": "07:00",
+    "close": "18:00"
+  },
+  "wednesday": {
+    "closed": false,
+    "open": "07:00",
+    "close": "18:00"
+  },
+  "thursday": {
+    "closed": false,
+    "open": "07:00",
+    "close": "18:00"
+  },
+  "friday": {
+    "closed": false,
+    "open": "07:00",
+    "close": "19:00"
+  },
+  "saturday": {
+    "closed": false,
+    "open": "08:00",
+    "close": "17:00"
+  },
+  "sunday": {
+    "closed": false,
+    "open": "08:00",
+    "close": "15:00"
+  },
+  "note": ""
+}
