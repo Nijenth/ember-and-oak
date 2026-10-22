@@ -1,0 +1,17 @@
+// Cloudflare Workers settings. Static pages are served straight from ./dist;
+// the Worker only handles the admin panel (/keystatic) when it's enabled.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ember-and-oak",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-10-15",
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist",
+    "not_found_handling": "404-page",
+    // Send the admin panel to the Worker even for page loads, instead of the 404 page.
+    "run_worker_first": ["/keystatic", "/keystatic/*", "/api/keystatic/*"]
+  },
+  "observability": { "enabled": true }
+}

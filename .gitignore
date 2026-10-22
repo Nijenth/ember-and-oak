@@ -1,8 +1,10 @@
 node_modules/
 dist/
 .astro/
-.netlify/
 .env
 .env.*
 !.env.example
 .DS_Store
+.wrangler/
+.dev.vars
+.dev.vars.*
