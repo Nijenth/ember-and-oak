@@ -31,6 +31,7 @@ export type BakeryItem = {
   tags: readonly string[];
   shape: 'cookie' | 'muffin';
   tone: string;
+  topping: string;
   photo: string | null;
 };
 
@@ -94,6 +95,7 @@ export async function loadSite() {
       tags: e.tags,
       shape: e.shape as BakeryItem['shape'],
       tone: /^#[0-9a-f]{6}$/i.test(e.tone) ? e.tone : '#C68A4C',
+      topping: e.topping,
       photo: e.photo || null,
     }));
   const bakeryCategories = [...new Set(bakery.map((b) => b.category))];

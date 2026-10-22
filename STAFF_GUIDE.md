@@ -33,7 +33,7 @@ On the left you'll see:
 
 **Add a photo to a bakery item.** Bakery → click it → *Photo* → upload a square photo → Save. It replaces the drawing.
 
-**Add a new bakery item.** Bakery → *Add*. Type `Cookies` or `Muffins` in *Bakery tab* (or a new name, like `Cakes`, to create a new tab), add the price, tick any dietary tags, Save.
+**Add a new bakery item.** Bakery → *Add*. Type `Cookies` or `Muffins` in *Bakery tab* (or a new name, like `Cakes`, to create a new tab), add the price, tick any dietary tags. For the 3D model, pick the *Shape* (cookie or muffin), a *Colour* for the dough (copy one from a similar item) and the *Topping*. Save.
 
 **Pause online orders** (e.g. a very busy morning). Café details → *Online ordering* → untick *Take pickup orders on the website* → Save. Tick it again when you're ready.
 

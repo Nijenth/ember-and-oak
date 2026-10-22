@@ -319,14 +319,27 @@ export default config({
           ],
         }),
         shape: fields.select({
-          label: 'Drawing (used when there is no photo)',
+          label: 'Shape (drawing and 3D model)',
           defaultValue: 'cookie',
           options: [
             { label: 'Cookie', value: 'cookie' },
             { label: 'Muffin', value: 'muffin' },
           ],
         }),
-        tone: hexColor('Drawing colour', '#C68A4C', 'Main colour of the drawing, e.g. #6B3A22 for chocolate.'),
+        tone: hexColor('Colour', '#C68A4C', 'Main colour of the drawing and the 3D model, e.g. #6B3A22 for chocolate.'),
+        topping: fields.select({
+          label: 'Topping (3D model)',
+          defaultValue: 'chocolate',
+          options: [
+            { label: 'Chocolate chips', value: 'chocolate' },
+            { label: 'Blueberries', value: 'blueberries' },
+            { label: 'Nuts', value: 'nuts' },
+            { label: 'Raisins', value: 'raisins' },
+            { label: 'Seeds (poppy, sesame)', value: 'seeds' },
+            { label: 'Sugar crystals', value: 'sugar' },
+            { label: 'None', value: 'none' },
+          ],
+        }),
         photo: fields.image({
           label: 'Photo (optional)',
           description: 'A square photo works best. It replaces the drawing.',

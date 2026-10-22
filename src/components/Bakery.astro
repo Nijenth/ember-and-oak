@@ -1,5 +1,4 @@
 ---
-import CupFallback from './CupFallback.astro';
 import QtyControl from './QtyControl.astro';
 import BakeryThumb from './BakeryThumb.astro';
 import type { BakeryItem } from '../lib/content';
@@ -17,11 +16,21 @@ const { eyebrow, title, text, items, categories, ordering, formatPrice } = Astro
 const first = categories[0];
 const tabId = (i: number) => `btab-${i}`;
 const TAG_LABELS: Record<string, string> = { vegan: 'Vegan', vegetarian: 'Vegetarian', 'gluten-free': 'Gluten-free', nuts: 'Contains nuts', egg: 'Contains egg' };
+const start = items.find((b) => b.category === first) ?? items[0];
+
+// What the 3D scene needs for each item. The seed keeps each model's lumps and chips the same on every visit.
+const seedOf = (s: string) => [...s].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7) % 100000;
+const looks = Object.fromEntries(items.map((b) => [b.id, { shape: b.shape, tone: b.tone, topping: b.topping, seed: seedOf(b.id) }]));
 ---
 {items.length > 0 && (
   <section class="wrap section flush-top" id="bakery" aria-labelledby="bakery-title">
     <div class="split bakery-split">
-      <div class="spot" id="spotBakery"><CupFallback /></div>
+      <div class="spot" id="spotBakery">
+        <div class="spot-fallback bake-fallback" data-fallback>
+          {start && <BakeryThumb shape={start.shape} tone={start.tone} />}
+        </div>
+        <p class="bake-caption" id="bakeCaption" aria-live="polite">{start?.name}</p>
+      </div>
       <div>
         {eyebrow && <span class="eyebrow">{eyebrow}</span>}
         <h2 class="sec-title" id="bakery-title">{title}</h2>
@@ -36,23 +45,27 @@ const TAG_LABELS: Record<string, string> = { vegan: 'Vegan', vegetarian: 'Vegeta
         <ul class="bakes" id="bakery-list" role={categories.length > 1 ? 'tabpanel' : undefined} aria-labelledby={categories.length > 1 ? tabId(0) : undefined}>
           {items.map((b) => (
             <li class="bake" data-cat={b.category} hidden={b.category !== first}>
-              <div class="bake-thumb">
-                {b.photo ? <img src={b.photo} alt="" width="64" height="64" loading="lazy" decoding="async" /> : <BakeryThumb shape={b.shape} tone={b.tone} />}
-              </div>
-              <div class="bake-body">
-                <div class="bake-head"><h3>{b.name}</h3><span class="price">{formatPrice(b.price)}</span></div>
-                {b.description && <p class="ddesc">{b.description}</p>}
-                {b.tags.length > 0 && (
-                  <ul class="tags" aria-label="Dietary information">
-                    {b.tags.map((t) => <li class={`tag tag-${t}`}>{TAG_LABELS[t] ?? t}</li>)}
-                  </ul>
-                )}
-              </div>
+              <button class="bake-pick" type="button" data-bake={b.id} data-name={b.name} aria-pressed={b.id === start?.id ? 'true' : 'false'}>
+                <span class="bake-thumb">
+                  {b.photo ? <img src={b.photo} alt="" width="64" height="64" loading="lazy" decoding="async" /> : <BakeryThumb shape={b.shape} tone={b.tone} />}
+                </span>
+                <span class="bake-body">
+                  <span class="bake-head"><span class="bake-name">{b.name}</span><span class="price">{formatPrice(b.price)}</span></span>
+                  {b.description && <span class="ddesc">{b.description}</span>}
+                  {b.tags.length > 0 && (
+                    <span class="tags">
+                      <span class="sr-only">Dietary information:</span>
+                      {b.tags.map((t) => <span class={`tag tag-${t}`}>{TAG_LABELS[t] ?? t}</span>)}
+                    </span>
+                  )}
+                </span>
+              </button>
               {ordering && <QtyControl item={`bakery:${b.id}`} name={b.name} />}
             </li>
           ))}
         </ul>
       </div>
     </div>
+    <script type="application/json" id="bake-looks" set:html={JSON.stringify({ start: start?.id ?? null, items: looks })}></script>
   </section>
 )}

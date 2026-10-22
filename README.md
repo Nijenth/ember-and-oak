@@ -8,7 +8,7 @@ A fast, production-ready café website with a 3D coffee cup, built with [Astro](
 |---|---|
 | **Astro 7** | Builds the site as plain HTML, so pages load fast and rank well in search. |
 | **Keystatic** | The admin panel staff use. Edits are saved as small JSON files in `src/content/`. |
-| **Three.js** | The 3D cup, saucer, beans and steam. Loaded only after the page is ready, and skipped on data-saver or very low-end phones (an illustrated cup shows instead). |
+| **Three.js** | The 3D cup, saucer, beans and steam, plus 3D cookies and muffins in the Bakery section (built in code, no model files). Loaded only after the page is ready, and skipped on data-saver or very low-end phones (illustrations show instead). |
 | **Cloudflare Workers** | Hosting on the free plan, which allows business use. Pages are served as static files; only the admin panel runs as code. |
 
 Also included: search-engine tags, link previews (`public/og.png`), structured data so Google can show your address and hours, a sitemap, `robots.txt`, a 404 page, keyboard and screen-reader support, and six colour themes.
@@ -57,7 +57,8 @@ src/
   pages/                 index, 404, robots.txt
   scripts/site.ts        Theme switcher, menu tabs, "open now" badge
   scripts/cart.ts        Cart, quantities, pickup times, WhatsApp order message
-  scripts/cup3d.ts       The 3D scene
+  scripts/cup3d.ts       The 3D scene and scroll choreography
+  scripts/bake3d.ts      3D cookies and muffins: shapes, toppings, drop / rise animations
   styles/global.css      All styles
 public/                  Favicon, link-preview image, _headers (caching and security headers)
   images/bakery/         Bakery photos uploaded in the admin
@@ -130,6 +131,7 @@ The customer presses Send in WhatsApp; staff reply there to confirm and the cust
 
 - **Theme colours and fonts:** `src/data/themes.ts`. Each theme also sets the 3D cup, saucer and bean colours.
 - **Cup size:** `CUP_SIZE` near the top of `src/scripts/cup3d.ts`.
+- **Bakery models:** each item's *Shape*, *Colour* and *Topping* (admin → Bakery) decide how its 3D model looks. Topping colours and sizes are in `TOPPING` at the top of `src/scripts/bake3d.ts`.
 - **Add a field staff can edit:** add it to `keystatic.config.ts`, then use it in the component. `src/lib/content.ts` is where content is read.
 - **Host elsewhere:** swap the adapter in `astro.config.mjs` (for example `@astrojs/netlify` or `@astrojs/vercel`) and delete `wrangler.jsonc` and `public/_headers`.
 

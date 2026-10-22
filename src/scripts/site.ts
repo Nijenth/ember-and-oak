@@ -61,6 +61,27 @@ function selectDrink(id: string) {
   document.dispatchEvent(new CustomEvent('cafe:drink', { detail: id }));
 }
 
+/* ---------- Bakery ---------- */
+const bakeEl = $('#bake-looks');
+const bakeData: { start: string | null; items: Record<string, { shape: 'cookie' | 'muffin'; tone: string; topping: string; seed: number }> } = bakeEl
+  ? JSON.parse(bakeEl.textContent || '{}')
+  : { start: null, items: {} };
+let currentBake = bakeData.start;
+
+function selectBake(id: string) {
+  if (!bakeData.items[id] || id === currentBake) return;
+  currentBake = id;
+  let name = '';
+  $$('.bake-pick').forEach((b) => {
+    const on = b.dataset.bake === id;
+    b.setAttribute('aria-pressed', String(on));
+    if (on) name = b.dataset.name || '';
+  });
+  const cap = $('#bakeCaption');
+  if (cap) cap.textContent = name;
+  document.dispatchEvent(new CustomEvent('cafe:bake', { detail: id }));
+}
+
 /** Tabs for both the drinks menu and the bakery: each tablist names the list it filters. */
 function selectTab(tab: HTMLElement, focus = false) {
   const tablist = tab.closest<HTMLElement>('[role="tablist"]')!;
@@ -75,15 +96,19 @@ function selectTab(tab: HTMLElement, focus = false) {
   const rows = list ? [...list.querySelectorAll<HTMLElement>(':scope > [data-cat]')] : [];
   rows.forEach((r) => (r.hidden = r.dataset.cat !== cat));
   if (focus) tab.focus();
-  // On the drinks menu, switching tabs also pours the first drink of that tab.
-  const first = rows.find((r) => !r.hidden)?.querySelector<HTMLElement>('[data-drink]');
-  if (first) selectDrink(first.dataset.drink!);
+  // Switching tabs also shows the first item of that tab: pours the drink, or brings out the bake.
+  const firstRow = rows.find((r) => !r.hidden);
+  const drink = firstRow?.querySelector<HTMLElement>('[data-drink]');
+  if (drink) selectDrink(drink.dataset.drink!);
+  const bake = firstRow?.querySelector<HTMLElement>('[data-bake]');
+  if (bake) selectBake(bake.dataset.bake!);
 }
 
 document.addEventListener('click', (e) => {
-  const t = (e.target as Element).closest<HTMLElement>('.tab, .drink');
+  const t = (e.target as Element).closest<HTMLElement>('.tab, .drink, .bake-pick');
   if (!t) return;
   if (t.classList.contains('tab')) selectTab(t);
+  else if (t.dataset.bake) selectBake(t.dataset.bake);
   else selectDrink(t.dataset.drink!);
 });
 
@@ -162,7 +187,7 @@ function shouldRun3D() {
 function start3D() {
   if (!shouldRun3D() || !$('#stage')) return;
   import('./cup3d')
-    .then((m) => m.startCup({ looks: menuData.drinks, start: currentDrink }))
+    .then((m) => m.startCup({ looks: menuData.drinks, start: currentDrink, bakes: bakeData.items, bakeStart: currentBake }))
     .catch((err) => console.warn('3D cup unavailable:', err));
 }
 

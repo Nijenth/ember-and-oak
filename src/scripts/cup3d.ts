@@ -1,18 +1,20 @@
 /**
  * The 3D cup. One fixed WebGL canvas floats above the page and docks into the
  * empty "spots" in each section as you scroll (#spotHero → #spotStory →
- * #cupWindow → #spotVisit). Loaded lazily by site.ts after the page is idle.
+ * #cupWindow → #spotBakery → #spotVisit). Loaded lazily by site.ts after the page is idle.
+ * In the Bakery section the cup hands over to a 3D cookie or muffin (see bake3d.ts).
  *
  * Tuning: CUP_SIZE below changes how much of each spot the cup fills.
  */
 import * as THREE from 'three';
 import { THEMES, type ThemeKey } from '../data/themes';
+import { createBakery, type BakeLook } from './bake3d';
 
 type Look = { cup: 'mug' | 'demi' | 'glass'; liquid: string; art: string; fill: number };
 
 const CUP_SIZE = 0.6; // 1 = fill each spot; lower = smaller cup
 
-export function startCup({ looks, start }: { looks: Record<string, Look>; start: string | null }) {
+export function startCup({ looks, start, bakes = {}, bakeStart = null }: { looks: Record<string, Look>; start: string | null; bakes?: Record<string, BakeLook>; bakeStart?: string | null }) {
   const canvas = document.querySelector<HTMLCanvasElement>('#stage');
   const firstLook = (start && looks[start]) || Object.values(looks)[0];
   if (!canvas || !firstLook) return;
@@ -71,13 +73,14 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
   const rig = new THREE.Group(); scene.add(rig);       // positioned + scaled by scroll
   const inner = new THREE.Group(); rig.add(inner);     // tilt + spin
   const model = new THREE.Group(); inner.add(model); model.position.y = -0.64;
+  const cupGroup = new THREE.Group(); model.add(cupGroup); // everything that belongs to the drink
 
   // Glazed ceramic
   const glaze = () => new THREE.MeshPhysicalMaterial({ color: col('#F2EAE0'), roughness: 0.32, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.06, side: THREE.DoubleSide });
   const cupMat = glaze(), saucerMat = glaze();
 
   // Mug: one smooth profile (foot ring, body, rounded lip, inner wall)
-  const mug = new THREE.Group(); model.add(mug); mug.position.y = 0.095;
+  const mug = new THREE.Group(); cupGroup.add(mug); mug.position.y = 0.095;
   const mugProfile = smooth([[0, 0], [0.4, 0], [0.5, 0.012], [0.55, 0.05], [0.6, 0.2], [0.68, 0.5], [0.76, 0.85], [0.81, 1.08], [0.83, 1.16], [0.818, 1.19], [0.79, 1.192], [0.766, 1.16], [0.738, 1.0], [0.68, 0.7], [0.6, 0.38], [0.5, 0.17], [0.32, 0.115], [0, 0.105]], 140);
   const mugMesh = new THREE.Mesh(new THREE.LatheGeometry(mugProfile, 96), cupMat); mugMesh.castShadow = true; mug.add(mugMesh);
   const handleCurve = new THREE.CatmullRomCurve3([[0.7, 1.0], [0.98, 1.0], [1.13, 0.78], [1.06, 0.5], [0.86, 0.38], [0.64, 0.36]].map((p) => new THREE.Vector3(p[0], p[1], 0)));
@@ -96,10 +99,10 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
 
   // Saucer with foot ring and a shallow well
   const saucer = new THREE.Mesh(new THREE.LatheGeometry(smooth([[0, 0], [0.66, 0], [0.76, 0.015], [0.79, 0.04], [0.8, 0.06], [1.05, 0.08], [1.28, 0.17], [1.35, 0.21], [1.34, 0.228], [1.3, 0.226], [1.1, 0.155], [0.74, 0.11], [0.56, 0.097], [0, 0.1]], 110), 96), saucerMat);
-  saucer.castShadow = true; saucer.receiveShadow = true; model.add(saucer);
+  saucer.castShadow = true; saucer.receiveShadow = true; cupGroup.add(saucer);
 
   // Glass for cold drinks
-  const glass = new THREE.Group(); glass.visible = false; model.add(glass);
+  const glass = new THREE.Group(); glass.visible = false; cupGroup.add(glass);
   const glassMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.03, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.02, transparent: true, opacity: 0.22, envMapIntensity: 2.4, side: THREE.DoubleSide, depthWrite: false });
   const glassMesh = new THREE.Mesh(new THREE.LatheGeometry(smooth([[0, 0], [0.46, 0], [0.54, 0.02], [0.57, 0.08], [0.6, 0.6], [0.635, 1.25], [0.65, 1.6], [0.645, 1.63], [0.625, 1.63], [0.61, 1.3], [0.575, 0.6], [0.54, 0.17], [0.4, 0.14], [0, 0.14]], 120), 96), glassMat);
   glassMesh.renderOrder = 3; glass.add(glassMesh);
@@ -117,7 +120,7 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
 
   // Pour stream shown while a drink refills
   const pourMat = new THREE.MeshPhysicalMaterial({ color: col('#6B3A22'), roughness: 0.15, clearcoat: 0.8 });
-  const pour = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.055, 1, 20, 1, true), pourMat); pour.visible = false; model.add(pour);
+  const pour = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.055, 1, 20, 1, true), pourMat); pour.visible = false; cupGroup.add(pour);
 
   // Ground that only shows shadows, plus a soft contact shadow
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), new THREE.ShadowMaterial({ opacity: 0.4 }));
@@ -235,7 +238,14 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
     (ground.material as THREE.ShadowMaterial).opacity = t.dark ? 0.55 : 0.28;
     (contact.material as THREE.MeshBasicMaterial).opacity = t.dark ? 0.75 : 0.45;
     renderer.toneMappingExposure = t.dark ? 1.1 : 1.0;
+    bakery?.applyTheme(t.c.accent);
   }
+  // Cookies and muffins for the Bakery section, on a plate that matches the saucer.
+  const hasBakery = Object.keys(bakes).length > 0 && !!document.querySelector('#spotBakery');
+  const bakery = hasBakery ? createBakery({ looks: bakes, start: bakeStart, plateMat: saucerMat, reduce }) : null;
+  if (bakery) { bakery.group.visible = false; model.add(bakery.group); }
+  document.addEventListener('cafe:bake', (e) => bakery?.select((e as CustomEvent<string>).detail));
+
   applyTheme(skin());
   document.addEventListener('cafe:theme', (e) => applyTheme((e as CustomEvent<ThemeKey>).detail));
 
@@ -258,7 +268,7 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
   };
   const menuSection = document.querySelector<HTMLElement>('#menu');
   type SpotName = keyof typeof spotEls;
-  type Focus = { spot: SpotName; f: number; tilt: number; beans: number; roll: number };
+  type Focus = { spot: SpotName; f: number; tilt: number; beans: number; roll: number; bake: number };
 
   let vw = innerWidth, vh = innerHeight;
   const halfH = Math.tan((35 / 2) * Math.PI / 180) * 10;
@@ -273,15 +283,26 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
     halfW = halfH * camera.aspect;
     const center = (el: HTMLElement) => docTop(el) + el.offsetHeight / 2 - vh / 2;
     const f: Focus[] = [];
-    if (spotEls.hero) f.push({ spot: 'hero', f: 0, tilt: 0.42, beans: 1, roll: 0 });
-    if (spotEls.story) f.push({ spot: 'story', f: center(spotEls.story), tilt: 0.3, beans: 0.8, roll: 0.14 });
+    if (spotEls.hero) f.push({ spot: 'hero', f: 0, tilt: 0.42, beans: 1, roll: 0, bake: 0 });
+    if (spotEls.story) f.push({ spot: 'story', f: center(spotEls.story), tilt: 0.3, beans: 0.8, roll: 0.14, bake: 0 });
     if (spotEls.win && menuSection) {
       const mTop = docTop(menuSection), mBot = mTop + menuSection.offsetHeight;
-      f.push({ spot: 'win', f: mTop - 20, tilt: 0.62, beans: 0, roll: 0 });
-      f.push({ spot: 'win', f: Math.max(mTop, mBot - vh), tilt: 0.62, beans: 0, roll: 0 });
+      f.push({ spot: 'win', f: mTop - 20, tilt: 0.62, beans: 0, roll: 0, bake: 0 });
+      f.push({ spot: 'win', f: Math.max(mTop, mBot - vh), tilt: 0.62, beans: 0, roll: 0, bake: 0 });
     }
-    if (spotEls.bakery) f.push({ spot: 'bakery', f: center(spotEls.bakery), tilt: 0.34, beans: 0.9, roll: 0.1 });
-    if (spotEls.visit) f.push({ spot: 'visit', f: center(spotEls.visit), tilt: 0.38, beans: 0.55, roll: -0.08 });
+    if (spotEls.bakery) {
+      // The bakery spot is sticky, so hold the bakery pose until it stops sticking
+      // (its column ends), then let the item scroll away with the page.
+      const sec = document.querySelector<HTMLElement>('#bakery')!;
+      const spot = spotEls.bakery, column = spot.parentElement!;
+      const stickTop = parseFloat(getComputedStyle(spot).top) || 0;
+      const bTop = docTop(sec);
+      const bEnd = Math.max(bTop, docTop(column) + column.offsetHeight - spot.offsetHeight - stickTop);
+      const pose = { spot: 'bakery' as const, tilt: 0.5, beans: bakery ? 0 : 0.8, roll: 0.06, bake: bakery ? 1 : 0 };
+      f.push({ ...pose, f: Math.min(center(spotEls.bakery), bTop + 40) });
+      f.push({ ...pose, f: bEnd });
+    }
+    if (spotEls.visit) f.push({ spot: 'visit', f: center(spotEls.visit), tilt: 0.38, beans: 0.55, roll: -0.08, bake: 0 });
     for (let i = 1; i < f.length; i++) f[i].f = Math.max(f[i].f, f[i - 1].f + 1);
     focus = f;
   }
@@ -303,7 +324,7 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
     const t = A === B ? 0 : ease(Math.min(1, Math.max(0, (y - A.f) / (B.f - A.f))));
     const a = live(A.spot), b = A.spot === B.spot ? a : live(B.spot);
     const L = (p: number, q: number) => p + (q - p) * t;
-    return { x: L(a.x, b.x), y: L(a.y, b.y), s: L(a.s, b.s), tilt: L(A.tilt, B.tilt), beans: L(A.beans, B.beans), roll: L(A.roll, B.roll) };
+    return { x: L(a.x, b.x), y: L(a.y, b.y), s: L(a.s, b.s), tilt: L(A.tilt, B.tilt), beans: L(A.beans, B.beans), roll: L(A.roll, B.roll), bake: L(A.bake, B.bake) };
   }
 
   measure();
@@ -319,7 +340,8 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
   canvas.addEventListener('webglcontextlost', (e) => { e.preventDefault(); document.documentElement.classList.remove('has3d'); });
   canvas.addEventListener('webglcontextrestored', () => document.documentElement.classList.add('has3d'));
 
-  const cur = { x: 0, y: 0, s: 0.5, tilt: 0.4, beans: 1, roll: 0 };
+  const cur = { x: 0, y: 0, s: 0.5, tilt: 0.4, beans: 1, roll: 0, bake: 0 };
+  let bakeShown = false;
   let first = true, last = performance.now(), spin = 0, clock = 0;
 
   function frame(now: number) {
@@ -373,15 +395,30 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
       b.g.scale.setScalar((0.17 + (i % 5) * 0.012) * Math.pow(cur.beans, 1.5));
     });
 
-    // Steam wisps
-    const topY = glass.visible ? 1.0 : mug.scale.x < 1 ? 0.4 : 0.6;
+    // Hand over between the drink and the bakery item: one shrinks away as the other grows.
+    const bw = ease(Math.min(1, Math.max(0, (cur.bake - 0.15) / 0.7)));
+    cupGroup.scale.setScalar(Math.max(0.0001, 1 - bw));
+    cupGroup.visible = bw < 0.999;
+    if (bakery) {
+      bakery.group.visible = bw > 0.001;
+      bakery.group.scale.setScalar(Math.max(0.0001, bw));
+      if (bw > 0.5 && !bakeShown) { bakeShown = true; bakery.intro(); }
+      if (bw < 0.05) bakeShown = false;
+      bakery.update(dt, bw);
+    }
+
+    // Steam wisps (from the drink, or from a warm muffin)
+    const cupTop = glass.visible ? 1.0 : mug.scale.x < 1 ? 0.4 : 0.6;
+    const bs = bakery ? bakery.steam() : { top: 0.4, amount: 0 };
+    const topY = cupTop + (bs.top - cupTop) * bw;
+    const steamAmount = steamOn * (1 - bw) + bs.amount * bw;
     steam.forEach((p) => {
       p.life += dt / p.dur; if (p.life > 1) { p.life = 0; p.x0 = (Math.random() - 0.5) * 0.5; }
       const L = p.life;
       p.s.position.set(p.x0 + Math.sin(L * 3 + p.ph) * 0.14 * L, topY + 0.35 + L * 1.5, 0.1);
       p.s.scale.set((0.45 + L * 0.5) * p.flip, 0.9 + L * 0.9, 1);
       p.m.rotation += dt * 0.05 * p.flip;
-      p.m.opacity = Math.pow(Math.sin(Math.PI * L), 1.5) * 0.55 * steamOn * (reduce ? 0.6 : 1);
+      p.m.opacity = Math.pow(Math.sin(Math.PI * L), 1.5) * 0.55 * steamAmount * (reduce ? 0.6 : 1);
     });
     ice.forEach((m, i) => { if (!reduce) m.rotation.y += dt * (0.08 + i * 0.04); });
 
