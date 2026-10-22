@@ -6,9 +6,10 @@ On the left you'll see:
 
 | Section | What it's for |
 |---|---|
-| **Café details** | Name, address, phone, ordering link, Instagram, currency, colour theme |
+| **Café details** | Name, address, phone, WhatsApp ordering, Instagram, currency, colour theme |
 | **Opening hours** | Hours for each day, a "Closed all day" box, and a note (e.g. "Closed 25 December") |
 | **Drinks** | Every drink on the menu |
+| **Bakery** | Cookies, muffins and anything else from the bakery, with prices and photos |
 | **Coffees on bar** | The beans you're currently serving |
 | **Homepage text** | The big headline, intro, scrolling banner and section titles |
 
@@ -27,6 +28,24 @@ On the left you'll see:
 **Holiday hours.** Opening hours → change the day, or tick *Closed all day*. Add a short note at the bottom so customers know it's temporary. Remember to change it back afterwards.
 
 **Swap the coffee on bar.** Coffees on bar → untick *On bar now* for the old one, then *Add* the new one.
+
+**Sold out of a cookie or muffin.** Bakery → click it → untick *Available today* → Save. Tick it again tomorrow.
+
+**Add a photo to a bakery item.** Bakery → click it → *Photo* → upload a square photo → Save. It replaces the drawing.
+
+**Add a new bakery item.** Bakery → *Add*. Type `Cookies` or `Muffins` in *Bakery tab* (or a new name, like `Cakes`, to create a new tab), add the price, tick any dietary tags, Save.
+
+**Pause online orders** (e.g. a very busy morning). Café details → *Online ordering* → untick *Take pickup orders on the website* → Save. Tick it again when you're ready.
+
+## Handling an order
+
+Orders arrive as a WhatsApp message on the café's number, like this:
+
+> New pickup order for Ember & Oak · Name: Priya · Pickup: Today at 10:30 · 2 × Flat White · 1 × Blueberry Muffin · Total: $12.75
+
+1. Reply to confirm, e.g. "Thanks Priya, see you at 10:30!" (or suggest another time if you're swamped).
+2. Make the order for the pickup time.
+3. The customer pays at the counter when they collect.
 
 ## Tips
 

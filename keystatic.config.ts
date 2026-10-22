@@ -54,7 +54,7 @@ export default config({
     brand: { name: 'Ember & Oak' },
     navigation: {
       'Café': ['settings', 'hours'],
-      Menu: ['drinks', 'origins'],
+      Menu: ['drinks', 'bakery', 'origins'],
       Website: ['homepage'],
     },
   },
@@ -90,9 +90,34 @@ export default config({
           label: 'Google Maps link (optional)',
           description: 'Paste the share link for your café on Google Maps. If empty, directions search for the address.',
         }),
+        ordering: fields.object(
+          {
+            enabled: fields.checkbox({
+              label: 'Take pickup orders on the website',
+              description: 'Shows Add buttons and the cart. Untick to turn ordering off (e.g. when you are too busy).',
+              defaultValue: true,
+            }),
+            whatsapp: fields.text({
+              label: 'WhatsApp number that receives orders',
+              description: 'With country code, e.g. +91 98765 43210 or +1 555 014 2000. Orders open WhatsApp with this number.',
+              validation: { pattern: { regex: /^$|^\+?[\d\s()-]{8,20}$/, message: 'Use a phone number with country code, e.g. +91 98765 43210' } },
+            }),
+            leadMinutes: fields.integer({
+              label: 'Earliest pickup (minutes from now)',
+              description: 'How long you need to prepare an order.',
+              defaultValue: 15,
+              validation: { min: 5, max: 180 },
+            }),
+            note: fields.text({
+              label: 'Note shown in the cart',
+              defaultValue: 'Pay at the counter when you collect.',
+            }),
+          },
+          { label: 'Online ordering' },
+        ),
         orderUrl: fields.url({
-          label: 'Online ordering link (optional)',
-          description: 'Swiggy, Zomato, Square, Toast, your own page… The "Order ahead" button only appears when this is set.',
+          label: 'Delivery app link (optional)',
+          description: 'Swiggy, Zomato, Uber Eats… If set, the cart shows a small "Want delivery?" link to it.',
         }),
         instagram: fields.url({ label: 'Instagram link (optional)' }),
         currency: fields.select({
@@ -195,6 +220,14 @@ export default config({
           },
           { label: 'Menu section' },
         ),
+        bakery: fields.object(
+          {
+            eyebrow: fields.text({ label: 'Small heading' }),
+            title: fields.text({ label: 'Title' }),
+            text: fields.text({ label: 'Paragraph', multiline: true }),
+          },
+          { label: 'Bakery section' },
+        ),
         visit: fields.object(
           {
             eyebrow: fields.text({ label: 'Small heading' }),
@@ -256,6 +289,52 @@ export default config({
           },
           { label: '3D cup appearance' },
         ),
+      },
+    }),
+
+    bakery: collection({
+      label: 'Bakery',
+      slugField: 'name',
+      path: 'src/content/bakery/*',
+      format: { data: 'json' },
+      columns: ['category', 'price', 'available'],
+      schema: {
+        name: fields.slug({ name: { label: 'Item name', validation: { isRequired: true } } }),
+        category: fields.text({
+          label: 'Bakery tab',
+          defaultValue: 'Cookies',
+          description: 'Items with the same tab name are grouped together, e.g. Cookies, Muffins.',
+          validation: { isRequired: true },
+        }),
+        price: fields.number({ label: 'Price', step: 0.01, validation: { isRequired: true, min: 0 } }),
+        description: fields.text({ label: 'Short description', multiline: true }),
+        tags: fields.multiselect({
+          label: 'Dietary tags',
+          options: [
+            { label: 'Vegan', value: 'vegan' },
+            { label: 'Vegetarian', value: 'vegetarian' },
+            { label: 'Gluten-free', value: 'gluten-free' },
+            { label: 'Contains nuts', value: 'nuts' },
+            { label: 'Contains egg', value: 'egg' },
+          ],
+        }),
+        shape: fields.select({
+          label: 'Drawing (used when there is no photo)',
+          defaultValue: 'cookie',
+          options: [
+            { label: 'Cookie', value: 'cookie' },
+            { label: 'Muffin', value: 'muffin' },
+          ],
+        }),
+        tone: hexColor('Drawing colour', '#C68A4C', 'Main colour of the drawing, e.g. #6B3A22 for chocolate.'),
+        photo: fields.image({
+          label: 'Photo (optional)',
+          description: 'A square photo works best. It replaces the drawing.',
+          directory: 'public/images/bakery',
+          publicPath: '/images/bakery/',
+        }),
+        available: fields.checkbox({ label: 'Available today', description: 'Untick when sold out or not baked today.', defaultValue: true }),
+        order: fields.integer({ label: 'Sort order', description: 'Lower numbers come first within a tab.', defaultValue: 10 }),
       },
     }),
 

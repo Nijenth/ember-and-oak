@@ -1,5 +1,6 @@
 ---
 import CupFallback from './CupFallback.astro';
+import QtyControl from './QtyControl.astro';
 import type { Drink } from '../lib/content';
 
 interface Props {
@@ -9,10 +10,10 @@ interface Props {
   drinks: Drink[];
   categories: string[];
   startDrink?: Drink;
-  orderUrl?: string | null;
+  ordering: boolean;
   formatPrice: (n: number) => string;
 }
-const { eyebrow, title, note, drinks, categories, startDrink, orderUrl, formatPrice } = Astro.props;
+const { eyebrow, title, note, drinks, categories, startDrink, ordering, formatPrice } = Astro.props;
 const startCat = startDrink?.category ?? categories[0];
 const tabId = (i: number) => `tab-${i}`;
 // What the 3D cup needs to know about each drink.
@@ -24,7 +25,7 @@ const looks = Object.fromEntries(drinks.map((d) => [d.id, { ...d.look, name: d.n
   <div class="menu-grid">
     <div>
       {categories.length > 1 && (
-        <div class="tabs" role="tablist" aria-label="Menu sections">
+        <div class="tabs" role="tablist" aria-label="Menu sections" data-tabs="drink-list">
           {categories.map((c, i) => (
             <button class="tab" type="button" role="tab" id={tabId(i)} aria-controls="drink-list" aria-selected={c === startCat ? 'true' : 'false'} tabindex={c === startCat ? 0 : -1} data-cat={c}>{c}</button>
           ))}
@@ -32,11 +33,14 @@ const looks = Object.fromEntries(drinks.map((d) => [d.id, { ...d.look, name: d.n
       )}
       <div class="drinks" id="drink-list" role={categories.length > 1 ? 'tabpanel' : undefined} aria-labelledby={categories.length > 1 ? tabId(categories.indexOf(startCat)) : undefined}>
         {drinks.map((d) => (
-          <button class="drink" type="button" data-drink={d.id} data-cat={d.category} aria-pressed={d.id === startDrink?.id ? 'true' : 'false'} hidden={d.category !== startCat}>
-            <span class="dname">{d.name}</span>
-            <span class="price">{formatPrice(d.price)}</span>
-            {d.description && <span class="ddesc">{d.description}</span>}
-          </button>
+          <div class="drink-row" data-cat={d.category} hidden={d.category !== startCat}>
+            <button class="drink" type="button" data-drink={d.id} aria-pressed={d.id === startDrink?.id ? 'true' : 'false'}>
+              <span class="dname">{d.name}</span>
+              <span class="price">{formatPrice(d.price)}</span>
+              {d.description && <span class="ddesc">{d.description}</span>}
+            </button>
+            {ordering && <QtyControl item={`drink:${d.id}`} name={d.name} />}
+          </div>
         ))}
       </div>
       {note && <p class="lede menu-note">{note}</p>}
@@ -46,7 +50,7 @@ const looks = Object.fromEntries(drinks.map((d) => [d.id, { ...d.look, name: d.n
       <div class="window-top"><span class="eyebrow" id="winBar">{startDrink?.category}</span><span class="eyebrow" id="winPrice">{startDrink && formatPrice(startDrink.price)}</span></div>
       <div class="window-cap">
         <div><h3 id="winName">{startDrink?.name}</h3><p class="ratio" id="winRatio">{startDrink?.recipe}</p></div>
-        {orderUrl && <a class="btn" href={orderUrl} target="_blank" rel="noopener" id="orderBtn">Order ahead</a>}
+        {ordering && startDrink && <button class="btn" type="button" id="winAdd" data-item={`drink:${startDrink.id}`}>Add to order</button>}
       </div>
     </div>
   </div>

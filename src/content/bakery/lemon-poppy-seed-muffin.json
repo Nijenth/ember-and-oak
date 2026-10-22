@@ -1,0 +1,16 @@
+{
+  "name": "Lemon Poppy Seed Muffin",
+  "category": "Muffins",
+  "price": 3.75,
+  "description": "Zesty lemon glaze, a little crunch from poppy seeds.",
+  "tags": [
+    "vegetarian",
+    "egg",
+    "gluten-free"
+  ],
+  "shape": "muffin",
+  "tone": "#E3C27A",
+  "photo": null,
+  "available": true,
+  "order": 80
+}

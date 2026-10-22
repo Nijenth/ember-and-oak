@@ -56,21 +56,27 @@ function selectDrink(id: string) {
   set('#winRatio', d.recipe);
   set('#winBar', d.category);
   set('#winPrice', d.price);
+  const winAdd = $('#winAdd');
+  if (winAdd) winAdd.dataset.item = `drink:${id}`;
   document.dispatchEvent(new CustomEvent('cafe:drink', { detail: id }));
 }
 
+/** Tabs for both the drinks menu and the bakery: each tablist names the list it filters. */
 function selectTab(tab: HTMLElement, focus = false) {
+  const tablist = tab.closest<HTMLElement>('[role="tablist"]')!;
+  const list = document.getElementById(tablist.dataset.tabs!);
   const cat = tab.dataset.cat!;
-  $$('.tab').forEach((t) => {
+  tablist.querySelectorAll<HTMLElement>('.tab').forEach((t) => {
     const on = t === tab;
     t.setAttribute('aria-selected', String(on));
     t.tabIndex = on ? 0 : -1;
   });
-  $('#drink-list')?.setAttribute('aria-labelledby', tab.id);
-  const items = $$('.drink');
-  items.forEach((b) => (b.hidden = b.dataset.cat !== cat));
+  list?.setAttribute('aria-labelledby', tab.id);
+  const rows = list ? [...list.querySelectorAll<HTMLElement>(':scope > [data-cat]')] : [];
+  rows.forEach((r) => (r.hidden = r.dataset.cat !== cat));
   if (focus) tab.focus();
-  const first = items.find((b) => b.dataset.cat === cat);
+  // On the drinks menu, switching tabs also pours the first drink of that tab.
+  const first = rows.find((r) => !r.hidden)?.querySelector<HTMLElement>('[data-drink]');
   if (first) selectDrink(first.dataset.drink!);
 }
 
@@ -82,15 +88,17 @@ document.addEventListener('click', (e) => {
 });
 
 // Arrow keys move between tabs, as screen-reader users expect from a tablist.
-$('.tabs')?.addEventListener('keydown', (e) => {
-  const tabs = $$('.tab');
-  const i = tabs.indexOf(document.activeElement as HTMLElement);
-  if (i < 0) return;
-  const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
-  if (next === undefined) return;
-  e.preventDefault();
-  selectTab(tabs[(next + tabs.length) % tabs.length], true);
-});
+$$('[role="tablist"]').forEach((tablist) =>
+  tablist.addEventListener('keydown', (e) => {
+    const tabs = [...tablist.querySelectorAll<HTMLElement>('.tab')];
+    const i = tabs.indexOf(document.activeElement as HTMLElement);
+    if (i < 0) return;
+    const next = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    selectTab(tabs[(next + tabs.length) % tabs.length], true);
+  }),
+);
 
 /* ---------- Opening hours & "open now" ---------- */
 type Day = { day: string; closed: boolean; open: string; close: string };

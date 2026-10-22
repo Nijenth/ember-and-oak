@@ -1,0 +1,16 @@
+{
+  "name": "Peanut Butter Cookie",
+  "category": "Cookies",
+  "price": 3.0,
+  "description": "Crisp edges, soft centre, roasted peanuts.",
+  "tags": [
+    "vegetarian",
+    "nuts",
+    "egg"
+  ],
+  "shape": "cookie",
+  "tone": "#C9925A",
+  "photo": null,
+  "available": true,
+  "order": 40
+}

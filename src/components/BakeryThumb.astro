@@ -1,0 +1,33 @@
+---
+/** A small drawn cookie or muffin, tinted with the item's colour. Used when there's no photo. */
+interface Props { shape: 'cookie' | 'muffin'; tone: string }
+const { shape, tone } = Astro.props;
+// Slightly darker shade for chips and shading.
+const shade = (hex: string, k: number) => '#' + [1, 3, 5].map((i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * k).toString(16).padStart(2, '0')).join('');
+const dark = shade(tone, 0.55);
+const mid = shade(tone, 0.8);
+---
+{shape === 'cookie' ? (
+  <svg viewBox="0 0 64 64" aria-hidden="true">
+    <circle cx="32" cy="33" r="25" fill={mid}></circle>
+    <circle cx="32" cy="31" r="25" fill={tone}></circle>
+    <circle cx="22" cy="23" r="3.6" fill={dark}></circle>
+    <circle cx="38" cy="19" r="3" fill={dark}></circle>
+    <circle cx="43" cy="33" r="3.8" fill={dark}></circle>
+    <circle cx="28" cy="38" r="3.2" fill={dark}></circle>
+    <circle cx="19" cy="34" r="2.4" fill={dark}></circle>
+    <circle cx="36" cy="45" r="2.6" fill={dark}></circle>
+    <path d="M16 22c3-6 9-10 16-10" stroke="#fff" stroke-opacity=".28" stroke-width="2.5" stroke-linecap="round" fill="none"></path>
+  </svg>
+) : (
+  <svg viewBox="0 0 64 64" aria-hidden="true">
+    <path d="M15 34h34l-4.5 22a3 3 0 0 1-3 2.4H22.5a3 3 0 0 1-3-2.4Z" fill="var(--accent)"></path>
+    <path d="M22 35l1.6 22M29 35l.6 22.5M35 35l-.6 22.5M42 35l-1.6 22" stroke="var(--paper)" stroke-opacity=".35" stroke-width="1.6"></path>
+    <path d="M11 34c0-12 9.5-22 21-22s21 10 21 22c0 2-1.6 3.5-3.5 3.5h-35C12.6 37.5 11 36 11 34Z" fill={tone}></path>
+    <circle cx="24" cy="24" r="2.4" fill={dark}></circle>
+    <circle cx="35" cy="20" r="2.2" fill={dark}></circle>
+    <circle cx="41" cy="29" r="2.4" fill={dark}></circle>
+    <circle cx="29" cy="30" r="2" fill={dark}></circle>
+    <path d="M18 24c2-5 7-8 12-8.5" stroke="#fff" stroke-opacity=".3" stroke-width="2.5" stroke-linecap="round" fill="none"></path>
+  </svg>
+)}

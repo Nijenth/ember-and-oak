@@ -1,0 +1,23 @@
+---
+/**
+ * "Add" button that turns into a – 1 + quantity control once the item is in the cart.
+ * The cart script (src/scripts/cart.ts) keeps every control for the same item in sync.
+ */
+interface Props { item: string; name: string; compact?: boolean }
+const { item, name, compact = false } = Astro.props;
+---
+<div class:list={['qty', { compact }]} data-qty={item}>
+  <button type="button" class="qty-add" aria-label={`Add ${name} to your order`}>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+    <span>Add</span>
+  </button>
+  <div class="qty-step" hidden>
+    <button type="button" class="qty-btn" data-delta="-1" aria-label={`Remove one ${name}`}>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+    </button>
+    <output class="qty-n" aria-label={`${name} quantity`}>0</output>
+    <button type="button" class="qty-btn" data-delta="1" aria-label={`Add one more ${name}`}>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>
+    </button>
+  </div>
+</div>

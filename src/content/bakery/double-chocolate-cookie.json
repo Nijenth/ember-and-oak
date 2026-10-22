@@ -1,0 +1,14 @@
+{
+  "name": "Double Chocolate Cookie",
+  "category": "Cookies",
+  "price": 3.25,
+  "description": "Cocoa dough with chocolate chunks. Fudgy in the middle.",
+  "tags": [
+    "vegan"
+  ],
+  "shape": "cookie",
+  "tone": "#5A321C",
+  "photo": null,
+  "available": true,
+  "order": 20
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Oatmeal Raisin Cookie",
+  "category": "Cookies",
+  "price": 3.0,
+  "description": "Rolled oats, plump raisins and a little cinnamon.",
+  "tags": [
+    "vegetarian",
+    "egg"
+  ],
+  "shape": "cookie",
+  "tone": "#B8874F",
+  "photo": null,
+  "available": true,
+  "order": 30
+}

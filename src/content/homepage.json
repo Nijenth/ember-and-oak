@@ -53,6 +53,11 @@
     "title": "Pick a drink and watch it pour",
     "note": "Oat, almond and whole milk at no extra cost. Decaf on request."
   },
+  "bakery": {
+    "eyebrow": "From the bakery",
+    "title": "Something to go with it",
+    "text": "Baked in small trays every morning by the bakery next door. When they're gone, they're gone."
+  },
   "visit": {
     "eyebrow": "Visit",
     "title": "Pull up a stool"

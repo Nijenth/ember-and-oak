@@ -1,0 +1,15 @@
+{
+  "name": "Chocolate Chip Cookie",
+  "category": "Cookies",
+  "price": 3.0,
+  "description": "Brown butter dough, dark chocolate chunks, flaky salt on top.",
+  "tags": [
+    "vegetarian",
+    "egg"
+  ],
+  "shape": "cookie",
+  "tone": "#C68A4C",
+  "photo": null,
+  "available": true,
+  "order": 10
+}

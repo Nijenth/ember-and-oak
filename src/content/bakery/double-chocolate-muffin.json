@@ -1,0 +1,15 @@
+{
+  "name": "Double Chocolate Muffin",
+  "category": "Muffins",
+  "price": 4.0,
+  "description": "Dark cocoa crumb with a molten chocolate centre.",
+  "tags": [
+    "vegetarian",
+    "egg"
+  ],
+  "shape": "muffin",
+  "tone": "#4E2A17",
+  "photo": null,
+  "available": true,
+  "order": 70
+}

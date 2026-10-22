@@ -49,15 +49,18 @@ src/
     hours.json             Opening hours
     homepage.json          Hero, banner, section text
     drinks/*.json          One file per drink
+    bakery/*.json          One file per cookie, muffin…
     origins/*.json         One file per coffee on bar
   data/themes.ts         The six colour/font themes (and the 3D cup's colours for each)
-  components/            Header, Hero, Ticker, Beans, Menu, Visit, Footer…
+  components/            Header, Hero, Ticker, Beans, Menu, Bakery, Cart, Visit, Footer…
   layouts/Base.astro     <head>: SEO tags, structured data, fonts
   pages/                 index, 404, robots.txt
   scripts/site.ts        Theme switcher, menu tabs, "open now" badge
+  scripts/cart.ts        Cart, quantities, pickup times, WhatsApp order message
   scripts/cup3d.ts       The 3D scene
   styles/global.css      All styles
 public/                  Favicon, link-preview image, _headers (caching and security headers)
+  images/bakery/         Bakery photos uploaded in the admin
 ```
 
 ## Go live (Cloudflare, free)
@@ -90,11 +93,34 @@ Until one of these is set, the admin is left out of the live build (it only runs
 
 There's a one-page guide for staff in [STAFF_GUIDE.md](STAFF_GUIDE.md).
 
+## Pickup orders on WhatsApp
+
+Every drink, cookie and muffin has an **Add** button that turns into a **– 1 +** quantity control. The cart (header button, and a "View order" bar on phones) shows the total, asks for the customer's name and a pickup time, and **Send order on WhatsApp** opens WhatsApp with the whole order typed out:
+
+```
+New pickup order for Ember & Oak
+
+Name: Priya
+Pickup: Today at 10:30
+
+2 × Flat White — $9.00
+1 × Blueberry Muffin — $3.75
+
+Total: $12.75
+```
+
+The customer presses Send in WhatsApp; staff reply there to confirm and the customer pays at pickup. There are no payment fees and no server involved.
+
+- **Turn it on:** admin → *Café details → Online ordering* → enter the WhatsApp number that should receive orders (with country code). Until a number is set, the cart works but shows "Online ordering isn't connected yet" instead of the send button.
+- **Pickup times** come from *Opening hours* and the café's time zone: today's remaining slots (15-minute steps, starting after the "earliest pickup" lead time) and the next open day. The last slot is 15 minutes before closing.
+- **Pause ordering:** untick *Take pickup orders on the website*. Sold out of something? Untick *On the menu* (drinks) or *Available today* (bakery).
+- The cart is saved in the customer's browser, so it survives a reload. Prices in the message come from the site, so staff should still check totals when confirming.
+
 ## Before launch: replace the sample content
 
 - [ ] **Café details** (admin → Café details): name, address, phone, time zone, currency and number format. The time zone drives the "Open now" badge.
-- [ ] **Opening hours**, **Drinks**, **Coffees on bar**, **Homepage text**.
-- [ ] **Ordering link**: the "Order ahead" button only appears once this is filled in.
+- [ ] **Opening hours**, **Drinks**, **Bakery**, **Coffees on bar**, **Homepage text**.
+- [ ] **WhatsApp number** for orders (Café details → Online ordering). Use a WhatsApp Business number if you have one, so orders don't land in a personal chat.
 - [ ] **Link-preview image**: `public/og.png` (1200 × 630) currently shows the sample headline. Replace it with a photo or a screenshot of your finished homepage.
 - [ ] **Favicon**: `public/favicon.svg`, `favicon.ico` and `apple-touch-icon.png` use the bean mark. Swap in your logo if you have one.
 - [ ] **Theme**: pick one in Café details, and decide whether visitors can switch (the swatches in the header).

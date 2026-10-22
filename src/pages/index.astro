@@ -5,16 +5,24 @@ import Hero from '../components/Hero.astro';
 import Ticker from '../components/Ticker.astro';
 import Beans from '../components/Beans.astro';
 import Menu from '../components/Menu.astro';
+import Bakery from '../components/Bakery.astro';
 import Visit from '../components/Visit.astro';
 import Footer from '../components/Footer.astro';
+import Cart from '../components/Cart.astro';
 import { loadSite } from '../lib/content';
 
 const site = await loadSite();
-const { settings: s, page } = site;
+const { settings: s, page, ordering } = site;
+const links = [
+  { href: '#beans', label: 'Beans' },
+  { href: '#menu', label: 'Menu' },
+  ...(site.bakery.length ? [{ href: '#bakery', label: 'Bakery' }] : []),
+  { href: '#visit', label: 'Visit' },
+];
 ---
 
 <Base site={site}>
-  <Header name={s.name} themeKey={site.themeKey} showSwitcher={s.showThemeSwitcher} links={[{ href: '#beans', label: 'Beans' }, { href: '#menu', label: 'Menu' }, { href: '#visit', label: 'Visit' }]} />
+  <Header name={s.name} themeKey={site.themeKey} showSwitcher={s.showThemeSwitcher} showCart={ordering.enabled} links={links} />
 
   <canvas id="stage" aria-hidden="true"></canvas>
 
@@ -29,7 +37,16 @@ const { settings: s, page } = site;
       drinks={site.drinks}
       categories={site.categories}
       startDrink={site.startDrink}
-      orderUrl={s.orderUrl}
+      ordering={ordering.enabled}
+      formatPrice={site.formatPrice}
+    />
+    <Bakery
+      eyebrow={page.bakery.eyebrow}
+      title={page.bakery.title}
+      text={page.bakery.text}
+      items={site.bakery}
+      categories={site.bakeryCategories}
+      ordering={ordering.enabled}
       formatPrice={site.formatPrice}
     />
     <Visit
@@ -46,7 +63,23 @@ const { settings: s, page } = site;
 
   <Footer name={s.name} instagram={s.instagram} email={s.email} />
 
+  {ordering.enabled && (
+    <Cart
+      cafeName={s.name}
+      items={site.cartItems}
+      whatsapp={ordering.whatsapp}
+      leadMinutes={ordering.leadMinutes}
+      note={ordering.note}
+      deliveryUrl={ordering.deliveryUrl}
+      currency={s.currency}
+      locale={s.locale}
+      timeZone={s.timeZone}
+      hours={site.hours}
+    />
+  )}
+
   <script>
     import '../scripts/site';
+    import '../scripts/cart';
   </script>
 </Base>

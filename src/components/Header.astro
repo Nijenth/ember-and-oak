@@ -2,8 +2,8 @@
 import Logo from './Logo.astro';
 import { THEMES, type ThemeKey } from '../data/themes';
 
-interface Props { name: string; themeKey: ThemeKey; showSwitcher: boolean; links?: { href: string; label: string }[] }
-const { name, themeKey, showSwitcher, links = [{ href: '/#beans', label: 'Beans' }, { href: '/#menu', label: 'Menu' }, { href: '/#visit', label: 'Visit' }] } = Astro.props;
+interface Props { name: string; themeKey: ThemeKey; showSwitcher: boolean; showCart?: boolean; links?: { href: string; label: string }[] }
+const { name, themeKey, showSwitcher, showCart = false, links = [{ href: '/#beans', label: 'Beans' }, { href: '/#menu', label: 'Menu' }, { href: '/#visit', label: 'Visit' }] } = Astro.props;
 const themes = Object.entries(THEMES) as [ThemeKey, (typeof THEMES)[ThemeKey]][];
 ---
 <header class="head">
@@ -29,6 +29,12 @@ const themes = Object.entries(THEMES) as [ThemeKey, (typeof THEMES)[ThemeKey]][]
           ))}
         </fieldset>
       </>
+    )}
+    {showCart && (
+      <button class="cart-btn" type="button" id="cartBtn" aria-haspopup="dialog" aria-controls="cart" aria-label="Your order, 0 items">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"></path><path d="M9 10V7a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path></svg>
+        <span class="cart-count" id="cartCount" hidden>0</span>
+      </button>
     )}
   </div>
 </header>

@@ -1,0 +1,16 @@
+{
+  "name": "Banana Walnut Muffin",
+  "category": "Muffins",
+  "price": 3.75,
+  "description": "Ripe banana, toasted walnuts, brown sugar.",
+  "tags": [
+    "vegetarian",
+    "nuts",
+    "egg"
+  ],
+  "shape": "muffin",
+  "tone": "#B07B47",
+  "photo": null,
+  "available": true,
+  "order": 60
+}

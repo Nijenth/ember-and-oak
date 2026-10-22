@@ -1,0 +1,58 @@
+---
+import CupFallback from './CupFallback.astro';
+import QtyControl from './QtyControl.astro';
+import BakeryThumb from './BakeryThumb.astro';
+import type { BakeryItem } from '../lib/content';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  text: string;
+  items: BakeryItem[];
+  categories: string[];
+  ordering: boolean;
+  formatPrice: (n: number) => string;
+}
+const { eyebrow, title, text, items, categories, ordering, formatPrice } = Astro.props;
+const first = categories[0];
+const tabId = (i: number) => `btab-${i}`;
+const TAG_LABELS: Record<string, string> = { vegan: 'Vegan', vegetarian: 'Vegetarian', 'gluten-free': 'Gluten-free', nuts: 'Contains nuts', egg: 'Contains egg' };
+---
+{items.length > 0 && (
+  <section class="wrap section flush-top" id="bakery" aria-labelledby="bakery-title">
+    <div class="split bakery-split">
+      <div class="spot" id="spotBakery"><CupFallback /></div>
+      <div>
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        <h2 class="sec-title" id="bakery-title">{title}</h2>
+        {text && <p class="lede">{text}</p>}
+        {categories.length > 1 && (
+          <div class="tabs bakery-tabs" role="tablist" aria-label="Bakery sections" data-tabs="bakery-list">
+            {categories.map((c, i) => (
+              <button class="tab" type="button" role="tab" id={tabId(i)} aria-controls="bakery-list" aria-selected={c === first ? 'true' : 'false'} tabindex={c === first ? 0 : -1} data-cat={c}>{c}</button>
+            ))}
+          </div>
+        )}
+        <ul class="bakes" id="bakery-list" role={categories.length > 1 ? 'tabpanel' : undefined} aria-labelledby={categories.length > 1 ? tabId(0) : undefined}>
+          {items.map((b) => (
+            <li class="bake" data-cat={b.category} hidden={b.category !== first}>
+              <div class="bake-thumb">
+                {b.photo ? <img src={b.photo} alt="" width="64" height="64" loading="lazy" decoding="async" /> : <BakeryThumb shape={b.shape} tone={b.tone} />}
+              </div>
+              <div class="bake-body">
+                <div class="bake-head"><h3>{b.name}</h3><span class="price">{formatPrice(b.price)}</span></div>
+                {b.description && <p class="ddesc">{b.description}</p>}
+                {b.tags.length > 0 && (
+                  <ul class="tags" aria-label="Dietary information">
+                    {b.tags.map((t) => <li class={`tag tag-${t}`}>{TAG_LABELS[t] ?? t}</li>)}
+                  </ul>
+                )}
+              </div>
+              {ordering && <QtyControl item={`bakery:${b.id}`} name={b.name} />}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+)}

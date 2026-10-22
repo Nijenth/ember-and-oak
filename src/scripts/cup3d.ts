@@ -253,6 +253,7 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
     hero: document.querySelector<HTMLElement>('#spotHero'),
     story: document.querySelector<HTMLElement>('#spotStory'),
     win: document.querySelector<HTMLElement>('#cupWindow'),
+    bakery: document.querySelector<HTMLElement>('#spotBakery'),
     visit: document.querySelector<HTMLElement>('#spotVisit'),
   };
   const menuSection = document.querySelector<HTMLElement>('#menu');
@@ -279,6 +280,7 @@ export function startCup({ looks, start }: { looks: Record<string, Look>; start:
       f.push({ spot: 'win', f: mTop - 20, tilt: 0.62, beans: 0, roll: 0 });
       f.push({ spot: 'win', f: Math.max(mTop, mBot - vh), tilt: 0.62, beans: 0, roll: 0 });
     }
+    if (spotEls.bakery) f.push({ spot: 'bakery', f: center(spotEls.bakery), tilt: 0.34, beans: 0.9, roll: 0.1 });
     if (spotEls.visit) f.push({ spot: 'visit', f: center(spotEls.visit), tilt: 0.38, beans: 0.55, roll: -0.08 });
     for (let i = 1; i < f.length; i++) f[i].f = Math.max(f[i].f, f[i - 1].f + 1);
     focus = f;

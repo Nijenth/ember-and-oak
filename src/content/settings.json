@@ -13,6 +13,12 @@
     "country": "US"
   },
   "mapsUrl": null,
+  "ordering": {
+    "enabled": true,
+    "whatsapp": "",
+    "leadMinutes": 15,
+    "note": "Pay at the counter when you collect."
+  },
   "orderUrl": null,
   "instagram": null,
   "currency": "USD",

@@ -22,6 +22,21 @@ export type Drink = {
   look: { cup: 'mug' | 'demi' | 'glass'; liquid: string; art: string; fill: number };
 };
 
+export type BakeryItem = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  description: string;
+  tags: readonly string[];
+  shape: 'cookie' | 'muffin';
+  tone: string;
+  photo: string | null;
+};
+
+/** Everything the cart needs to know about one orderable item. */
+export type CartItem = { id: string; name: string; price: number; kind: 'drink' | 'bakery' };
+
 export type DayHours = { day: string; closed: boolean; open: string; close: string };
 
 function required<T>(value: T | null, what: string): T {
@@ -30,12 +45,13 @@ function required<T>(value: T | null, what: string): T {
 }
 
 export async function loadSite() {
-  const [settings, hoursRaw, home, drinkEntries, originEntries] = await Promise.all([
+  const [settings, hoursRaw, home, drinkEntries, originEntries, bakeryEntries] = await Promise.all([
     reader.singletons.settings.read(),
     reader.singletons.hours.read(),
     reader.singletons.homepage.read(),
     reader.collections.drinks.all(),
     reader.collections.origins.all(),
+    reader.collections.bakery.all(),
   ]);
 
   const s = required(settings, 'café details');
@@ -66,6 +82,35 @@ export async function loadSite() {
   // Keep tabs in the order their first drink appears.
   const categories = [...new Set(drinks.map((d) => d.category))];
 
+  const bakery: BakeryItem[] = bakeryEntries
+    .filter((e) => e.entry.available)
+    .sort((a, b) => (a.entry.order ?? 0) - (b.entry.order ?? 0) || a.entry.name.localeCompare(b.entry.name))
+    .map(({ slug, entry: e }) => ({
+      id: slug,
+      name: e.name,
+      category: e.category.trim() || 'Bakery',
+      price: e.price,
+      description: e.description,
+      tags: e.tags,
+      shape: e.shape as BakeryItem['shape'],
+      tone: /^#[0-9a-f]{6}$/i.test(e.tone) ? e.tone : '#C68A4C',
+      photo: e.photo || null,
+    }));
+  const bakeryCategories = [...new Set(bakery.map((b) => b.category))];
+
+  // Ordering is on when the admin says so and there's something to order.
+  const ordering = {
+    enabled: s.ordering.enabled && drinks.length + bakery.length > 0,
+    whatsapp: s.ordering.whatsapp.replace(/[^\d]/g, ''),
+    leadMinutes: s.ordering.leadMinutes ?? 15,
+    note: s.ordering.note,
+    deliveryUrl: s.orderUrl,
+  };
+  const cartItems: CartItem[] = [
+    ...drinks.map((d) => ({ id: `drink:${d.id}`, name: d.name, price: d.price, kind: 'drink' as const })),
+    ...bakery.map((b) => ({ id: `bakery:${b.id}`, name: b.name, price: b.price, kind: 'bakery' as const })),
+  ];
+
   const origins = originEntries
     .filter((e) => e.entry.onBar)
     .sort((a, b) => (a.entry.order ?? 0) - (b.entry.order ?? 0))
@@ -95,6 +140,10 @@ export async function loadSite() {
     categories,
     startDrink,
     origins,
+    bakery,
+    bakeryCategories,
+    ordering,
+    cartItems,
     hours,
     hoursNote: h.note,
     formatPrice: (n: number) => money.format(n),

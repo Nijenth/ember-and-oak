@@ -1,0 +1,14 @@
+{
+  "name": "Blueberry Muffin",
+  "category": "Muffins",
+  "price": 3.75,
+  "description": "Bursting with blueberries under a crunchy sugar top.",
+  "tags": [
+    "vegetarian",
+    "egg"
+  ],
+  "shape": "muffin",
+  "tone": "#D2A06A",
+  "available": true,
+  "order": 50
+}
